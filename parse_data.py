@@ -30,7 +30,11 @@ for i in range(0,config["projects_num"],100):
     r = requests.request("GET", url, headers=headers, params=data)
     # print(r.url)
     
-    data =  r.json()['result']
+    try:
+        data = r.json()['result']
+    except:
+        print(f'Parsing stopped on {offset} project')
+        break
     
     # print(len(data['projects']))
     
