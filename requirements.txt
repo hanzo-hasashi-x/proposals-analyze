@@ -2,7 +2,7 @@ notebook
 gdown
 tensorflow
 openai
-dotenv
-sklearn
+python-dotenv
+scikit-learn==1.2.2
 pandas
 matplotlib

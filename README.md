@@ -9,7 +9,7 @@ Thie project is designed to
 ```
 git clone https://github.com/hanzo-hasashi-x/proposals-analyze.git
 cd proposals-analyze
-pip install -c requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Rewiew
@@ -110,4 +110,18 @@ data = ( project_descriptions, bid_descriptions, x_2)
 
 data = utils.encode_words(data)
 pred = model.predict(data)
+```
+
+### API usage
+```
+import requests
+import json
+
+project = ... # requested from freelancer API and bids added to it
+
+url = 'http://113.30.188.137/custom_embeddings_model' # or 'simple_model'
+r = requests.post(url, data=json.dumps({"project": projects}),
+				  headers={"Content-Type": "application/json"})
+
+data = r.json()['pred']
 ```
