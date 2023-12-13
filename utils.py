@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+import tensorflow as tf
+
 import json
 
 def parse_project_bids(project):
@@ -93,3 +95,26 @@ def prepare_df(df):
     df[df['bid_score'] > 50.] = np.mean(df['bid_score'])
 
     return df
+
+with open('models/vocabulary.json', 'r') as f:
+    truncated_vocabulary = json.load(f)
+
+words = tf.constant(truncated_vocabulary)
+word_ids = tf.range(len(truncated_vocabulary), dtype=tf.int64)
+vocab_init = tf.lookup.KeyValueTensorInitializer(words, word_ids)
+num_oov_buckets = 1000
+table = tf.lookup.StaticVocabularyTable(vocab_init, num_oov_buckets)
+
+def preprocess_batch(X_batch):
+    X_batch = tf.strings.substr(X_batch, 0, 300)
+    X_batch = tf.strings.regex_replace(X_batch, rb"<br\s*/?>", b" ")
+    X_batch = tf.strings.regex_replace(X_batch, b"[^a-zA-Z']", b" ")
+    X_batch = tf.strings.split(X_batch)
+
+    return X_batch.to_tensor(default_value=b"<pad>")
+
+def encode_words(X_batch):
+    X_1 = table.lookup(preprocess_batch(X_batch[0]))
+    X_2 = table.lookup(preprocess_batch(X_batch[1]))
+
+    return (X_1,X_2, *X_batch[2:])

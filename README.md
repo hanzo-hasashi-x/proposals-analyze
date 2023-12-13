@@ -64,3 +64,50 @@ To use the model with pretained embeddings, it will be necessary to download it
 ```
 python download_models.py
 ```
+
+The passed data needs to have data columns, that's why it needs to be of DataFrame type
+
+#### Using vote_classifier
+```
+import joblib
+import utils
+
+estimator = joblib.load('estimators/ml_bids_estimator.json')
+
+data = utils.prepare_df(data) # pass data with necessary columns
+pred = estimator.predict_proba(data)
+```
+
+#### Using neural networks
+
+Load preprocess pipeline
+```
+import joblib
+import tensorflow as tf
+import tensorflow_hub as hub
+
+preprocess = joblib.load('models/pipeline.json')
+```
+
+Using pretrained-vector embeddings
+```
+model = tf.keras.models.load_model('models/ml_projects_vector_embeddings_model.h5',
+                                   custom_objects={"KerasLayer": hub.KerasLayer})
+
+x_2 = preprocess.transform(data).astype('float32')
+data = ( project_descriptions, bid_descriptions, x_2)
+
+pred = model.predict(data)
+```
+
+Using custom embeddings
+```
+model = tf.keras.models.load_model('models/ml_projects_custom_embeddings_model.h5',
+                                   custom_objects={"KerasLayer": hub.KerasLayer})
+
+x_2 = preprocess.transform(data).astype('float32')
+data = ( project_descriptions, bid_descriptions, x_2)
+
+data = utils.encode_words(data)
+pred = model.predict(data)
+```
