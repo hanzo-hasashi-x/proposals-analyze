@@ -5,6 +5,8 @@ Thie project is designed to
 * Analyze which properties and how much influence on the bid to be awarded
 * Generate bids (texts) which will have the most chance to be awarded
 
+Also all files with level, mean the level of techniques used there, than higher than more advanced technique used to classify bids.
+
 ## Install
 ```
 git clone https://github.com/hanzo-hasashi-x/proposals-analyze.git
@@ -24,9 +26,14 @@ pip install -r requirements.txt
 	* Either by opening parse_data.py and setting it at variable access_token
 	* Or by creating `.env`, with variable 
 	`FREELANCER_ACCESS_TOKEN={your_access_token}`
-* Run parsing with `python parse_data.py` which can take 10 minutes for 1000 projects
+* Run parsing with 
+```
+cd parser
+python parse_data.py
+``` 
+which can take 10 minutes for 1000 projects
 
-### Training algorithms (simple_models.ipynb)
+### Training algorithms (level_1.ipynb)
 The trained algorithms are LogisticRegression, RandomForestClassifier, GradientBoostingClassifier, SVC, KNeighborsClassifier, GaussianNB. More deeply trained will be SVC (with RandomSearch) and RandomForest (with GridSearch). The final estimator will the soft voting classifier of all trained models.
 
 #### Training:
@@ -35,7 +42,7 @@ The trained algorithms are LogisticRegression, RandomForestClassifier, GradientB
 * Change the name of estimator_name, estimator will be saved with the appropriate name in folder `estimators`
 * Run all cells
 
-### Training deep networks (advanced_classification.ipynb)
+### Training deep networks (level_2.ipynb)
 There are two models which are different one from other by the embeddings and the consequential adjusting. To reach the best analyze of text data, the classification models are trained firstly only on text data, and then added into model which analyze other data.
 
 * Pretrained embeddings: DNN model which analyze project and bid descriptions by using pretrained embeddings of 128 dimensions in output
@@ -46,6 +53,10 @@ There are two models which are different one from other by the embeddings and th
 * Adjust the variables such as dataset_name, models names and pipeline name
 * Models will be saved with the appropriate names in folder `models`
 * Run all cells
+
+### Description of level_3.ipynb
+* 1st model: Pretrained BERTs models are used for creating embeddings for project and bid descriptions with simple DNN for other data
+* 2nd model: Custom transformer trained on `project_description` as decoder inputs and `bid_description` as input for encoder + simple DNN for other data
 
 ### Generating bids (bids_generation.ipynb)
 For generation of bids ChatGPT was used with sending different prompts to reach the max probability. The models from previous trainings used as the tool to predict how much successful the bid will be. For each try it generates 3 tries, in each try ChatGPT looks at description and generates price, time of delivery and bid description, all other parameters are taken from the best bid.
